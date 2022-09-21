@@ -1,0 +1,22 @@
+.nav_header {
+  color: white;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  padding: 40px;
+
+  img {
+    width: 100px;
+  }
+
+  div.menu-items {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    a:hover {
+      color: #b03e71;
+      transition: 0.2s;
+    }
+  }
+}
