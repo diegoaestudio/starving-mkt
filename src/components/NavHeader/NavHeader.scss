@@ -14,8 +14,20 @@
     justify-content: flex-end;
     gap: 10px;
 
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+
+      img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
     a:hover {
-      color: #b03e71;
+      color: #fdc600d9;
       transition: 0.2s;
     }
   }

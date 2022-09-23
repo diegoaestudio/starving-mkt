@@ -1,8 +1,17 @@
 import Nullstack from "nullstack";
+import "../flow/config";
+import * as fcl from "@onflow/fcl";
 import "./Application.scss";
-import Home from "./Home.jsx";
+import Home from "./pages/Home";
+import Admin from "./pages/Admin";
+import AdminNFT from "./pages/AdminNFT";
+import AdminNFTList from "./pages/AdminNFTList";
+import { storeUser } from "./utils/user";
 
 class Application extends Nullstack {
+  tap = {};
+  user = { loggedIn: false };
+
   static async startProject({ project }) {
     project.name = "Nullstack";
     project.description =
@@ -16,8 +25,33 @@ class Application extends Nullstack {
     ];
   }
 
+  static async getTap({ database }) {
+    return database.collection("fts").findOne({ name: "TAP" });
+  }
+
+  static async createOrUpdateUser({ user, database }) {
+    if (!user.loggedIn) return { loggedIn: false };
+
+    const { addr } = user;
+    const userDoc = await database.collection("users").findOne({ addr });
+    if (userDoc) return userDoc;
+
+    const newUser = await database.collection("users").insertOne(user);
+    return newUser;
+  }
+
+  async saveUser(user) {
+    this.user = await this.createOrUpdateUser({ user });
+    await storeUser(this.user);
+  }
+
   prepare(context) {
     context.page.locale = "en-US";
+    fcl.currentUser.subscribe(this.saveUser);
+  }
+
+  async initiate() {
+    this.tap = await this.getTap();
   }
 
   renderHead() {
@@ -36,7 +70,10 @@ class Application extends Nullstack {
     return (
       <body>
         <Head />
-        <Home />
+        <Home route="/" />
+        <Admin route="/admin" />
+        <AdminNFT route="/admin/create" />
+        <AdminNFTList route="/admin/nfts" />
       </body>
     );
   }

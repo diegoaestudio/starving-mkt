@@ -1,4 +1,5 @@
 import Nullstack from "nullstack";
+import ButtonLink from "../ButtonLink";
 import "./Kindness.scss";
 
 export default class Kindness extends Nullstack {
@@ -12,8 +13,10 @@ export default class Kindness extends Nullstack {
             buy one, give one opportunity. Every child deserves an NFT.
           </div>
           <div class="speech__buttons">
-            <button class="speech__button">Explore</button>
-            <button class="speech__button buy_taps">Buy Taps</button>
+            <ButtonLink linkPath="/explore">Explore</ButtonLink>
+            <ButtonLink linkPath="/taps" className="btn-pink-ghost">
+              Buy Taps
+            </ButtonLink>
           </div>
         </div>
         <div class="kindness__img">

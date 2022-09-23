@@ -9,6 +9,11 @@
   },
   "scripts": {
     "start": "npx nullstack start",
-    "build": "npx nullstack build"
+    "build": "npx nullstack build",
+    "deploy:cdc": "flow project deploy --network=testnet --update"
+  },
+  "dependencies": {
+    "@onflow/fcl": "^1.2.1",
+    "mongodb": "^4.10.0"
   }
 }

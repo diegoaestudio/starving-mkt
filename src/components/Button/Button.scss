@@ -1,0 +1,25 @@
+.btn {
+  min-width: 160px;
+  background: #fdc500;
+  padding: 14px;
+  font-family: "Crete Round", serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: #000000;
+
+  &:hover {
+    background: #fdc600d9;
+    transition: 0.2s;
+    cursor: pointer;
+  }
+
+  &.btn-pink {
+    background: #ff8896;
+
+    &:hover {
+      background: #ff8896b3;
+    }
+  }
+}

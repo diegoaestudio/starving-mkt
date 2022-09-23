@@ -1,0 +1,25 @@
+{
+  "networks": {
+    "emulator": "127.0.0.1:3569",
+    "mainnet": "access.mainnet.nodes.onflow.org:9000",
+    "testnet": "access.devnet.nodes.onflow.org:9000"
+  },
+  "accounts": {
+    "diego": {
+      "fromFile": "diego.private.json"
+    },
+    "emulator-account": {
+      "address": "f8d6e0586b0a20c7",
+      "key": "ab3caa896da69861224b876ed0c28edf080b60d87d8fa3cffc9e40b858f4a47c"
+    }
+  },
+  "contracts": {
+    "TAPToken": "./cadence/transacations/TAPToken.cdc",
+    "XNFT": "./cadence/transacations/XNFT.cdc"
+  },
+  "deployments": {
+    "testnet": {
+      "diego": ["TAPToken", "XNFT"]
+    }
+  }
+}
