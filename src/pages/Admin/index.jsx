@@ -1,6 +1,7 @@
 import Nullstack from "nullstack";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
+import Input from "../../components/Input";
 import NavHeader from "../../components/NavHeader";
 import "./Admin.css";
 
@@ -34,20 +35,10 @@ class Admin extends Nullstack {
             <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
           </aside>
           <div class="faucet">
-            <h2>Faucet</h2>
+            <img src="/faucet.svg" alt="" />
             <form class="form" action="submit">
-              <input
-                type="text"
-                placeholder="address"
-                value={this.data.address}
-                oninput={this.handleChange({ field: "address" })}
-              />
-              <input
-                type="number"
-                placeholder="taps"
-                value={this.data.price}
-                oninput={this.handleChange({ field: "price" })}
-              />
+              <Input placeholder="address" bind={this.data.address} />
+              <Input placeholder="taps" bind={this.data.price} />
               <Button
                 className="btn-pink"
                 onclick={() => console.log("I was clicked")}

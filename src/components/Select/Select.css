@@ -1,0 +1,11 @@
+.select {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.select > select {
+  border: 1px solid #ffffff;
+  background-color: transparent;
+  padding: 5px;
+}

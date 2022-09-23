@@ -1,7 +1,10 @@
 import Nullstack from "nullstack";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
+import Input from "../../components/Input";
 import NavHeader from "../../components/NavHeader";
+import Select from "../../components/Select";
+import TextArea from "../../components/TextArea";
 import "./AdminNFT.css";
 
 class AdminNFT extends Nullstack {
@@ -22,6 +25,11 @@ class AdminNFT extends Nullstack {
       description: "",
     },
   };
+
+  options = [
+    { label: "Yes", value: true },
+    { label: "No", value: false },
+  ];
 
   handleChange({ field }) {
     return ({ event }) => {
@@ -71,93 +79,52 @@ class AdminNFT extends Nullstack {
           <aside>
             <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
 
-            <a href="/admin/nfts" class="text-3">
+            <a href="/admin/nfts" class="text-3 pt-10">
               NFTS
             </a>
-
-            <h1 class="text-3xl font-bold underline">Hello world!</h1>
           </aside>
           <div class="create-nft">
             <form class="form" action="submit">
               <div class="side-a">
                 <h2>Create a new NFT</h2>
-                <input
-                  type="text"
-                  placeholder="image url"
-                  value={this.data.img}
-                  oninput={this.handleChange({ field: "img" })}
-                />
-                <input
-                  type="text"
-                  placeholder="name"
-                  value={this.data.name}
-                  oninput={this.handleChange({ field: "name" })}
-                />
-                <input
-                  type="text"
-                  placeholder="external link"
-                  value={this.data.externalLink}
-                  oninput={this.handleChange({ field: "externalLink" })}
-                />
-                <input
-                  type="number"
-                  placeholder="max editions"
+                <Input label="Image Url" bind={this.data.img} />
+                <Input label="Name" bind={this.data.name} />
+                <Input label="External Link" bind={this.data.externalLink} />
+                <Input
+                  label="Max Editions"
                   bind={this.data.maxEditions}
-                />
-                <textarea
-                  placeholder="description"
-                  value={this.data.description}
-                  oninput={this.handleChange({ field: "description" })}
-                />
-                <select
-                  name="dehydrated"
-                  id="dehydrated"
-                  bind={this.data.dehydrated}
-                  placeholder="dehydrated"
-                >
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
-                </select>
-                <select
-                  name="crying"
-                  id="crying"
-                  bind={this.data.crying}
-                  placeholder="crying"
-                >
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
-                </select>
-                <input
                   type="number"
-                  placeholder="price"
-                  bind={this.data.price}
                 />
+                <TextArea label="Description" bind={this.data.description} />
+                <Select
+                  label="Dehydrated"
+                  bind={this.data.dehydrated}
+                  options={this.options}
+                />
+
+                <Select
+                  label="Crying"
+                  bind={this.data.crying}
+                  options={this.options}
+                />
+
+                <Input label="Price" bind={this.data.price} type="number" />
               </div>
               <div class="side-b">
                 <h2>Side B - NFT For Donation</h2>
-                <input
-                  type="text"
-                  placeholder="img url"
-                  value={this.data.donation.img}
-                  oninput={this.handleDonationChange({ field: "img" })}
+                <Input label="Image Url" bind={this.data.donation.img} />
+                <Input label="Name" bind={this.data.donation.name} />
+                <Input
+                  label="External Link"
+                  bind={this.data.donation.externalLink}
                 />
-                <input
-                  type="text"
-                  placeholder="name"
-                  value={this.data.donation.name}
-                  oninput={this.handleDonationChange({ field: "name" })}
+                <Input
+                  label="Max Editions"
+                  bind={this.data.donation.maxEditions}
                 />
-                <input
-                  type="text"
-                  placeholder="external link"
-                  value={this.data.donation.externalLink}
-                  oninput={this.handleDonationChange({ field: "externalLink" })}
-                />
-                <input type="number" placeholder="max editions" disabled />
-                <textarea
-                  placeholder="description"
-                  value={this.data.donation.description}
-                  oninput={this.handleDonationChange({ field: "description" })}
+                <TextArea
+                  label="Description"
+                  bind={this.data.donation.description}
                 />
               </div>
               <Button

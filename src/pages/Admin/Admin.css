@@ -9,12 +9,16 @@
 .admin > .faucet {
   display: flex;
   flex-direction: column;
-  padding: 20px;
   gap: 10px;
+  padding: 0 20px;
 }
 
 .admin > .faucet > .form {
   display: flex;
   flex-direction: column;
   gap: 1em;
+}
+
+.admin > .faucet > img {
+  width: 200px;
 }

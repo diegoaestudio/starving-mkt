@@ -1,0 +1,11 @@
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.input > input {
+  border: 1px solid #ffffff;
+  background-color: transparent;
+  padding: 5px;
+}
