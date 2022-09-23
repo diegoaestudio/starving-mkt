@@ -1,6 +1,6 @@
 import Nullstack from "nullstack";
 import ButtonLink from "../ButtonLink";
-import "./Kindness.scss";
+import "./Kindness.css";
 
 export default class Kindness extends Nullstack {
   render() {

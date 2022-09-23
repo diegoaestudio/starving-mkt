@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import "./Footer.scss";
+import "./Footer.css";
 
 export default class Footer extends Nullstack {
   render() {

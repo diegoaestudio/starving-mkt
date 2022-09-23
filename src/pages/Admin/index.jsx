@@ -1,6 +1,8 @@
 import Nullstack from "nullstack";
 import Button from "../../components/Button";
-import "./Admin.scss";
+import ButtonLink from "../../components/ButtonLink";
+import NavHeader from "../../components/NavHeader";
+import "./Admin.css";
 
 class Admin extends Nullstack {
   data = {};
@@ -23,41 +25,39 @@ class Admin extends Nullstack {
       this.data[field] = event.target.value;
     };
   }
-
-  navigateToNFT({ router }) {
-    router.url = "/admin/nft";
-  }
-
   render() {
     return (
-      <main class="admin">
-        <aside>
-          <Button onclick={this.navigateToNFT}>Create NFT</Button>
-        </aside>
-        <div class="faucet">
-          <h2>Faucet</h2>
-          <form class="form" action="submit">
-            <input
-              type="text"
-              placeholder="address"
-              value={this.data.address}
-              oninput={this.handleChange({ field: "address" })}
-            />
-            <input
-              type="number"
-              placeholder="taps"
-              value={this.data.price}
-              oninput={this.handleChange({ field: "price" })}
-            />
-            <Button
-              className="btn-pink"
-              onclick={() => console.log("I was clicked")}
-            >
-              Mint and send
-            </Button>
-          </form>
-        </div>
-      </main>
+      <>
+        <NavHeader />
+        <main class="admin">
+          <aside>
+            <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
+          </aside>
+          <div class="faucet">
+            <h2>Faucet</h2>
+            <form class="form" action="submit">
+              <input
+                type="text"
+                placeholder="address"
+                value={this.data.address}
+                oninput={this.handleChange({ field: "address" })}
+              />
+              <input
+                type="number"
+                placeholder="taps"
+                value={this.data.price}
+                oninput={this.handleChange({ field: "price" })}
+              />
+              <Button
+                className="btn-pink"
+                onclick={() => console.log("I was clicked")}
+              >
+                Mint and send
+              </Button>
+            </form>
+          </div>
+        </main>
+      </>
     );
   }
 }

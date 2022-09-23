@@ -8,18 +8,18 @@
   font-size: 20px;
   line-height: 28px;
   color: #000000;
+}
 
-  &:hover {
-    background: #fdc600d9;
-    transition: 0.2s;
-    cursor: pointer;
-  }
+.btn:hover {
+  background: #fdc600d9;
+  transition: 0.2s;
+  cursor: pointer;
+}
 
-  &.btn-pink {
-    background: #ff8896;
+.btn.btn-pink {
+  background: #ff8896;
+}
 
-    &:hover {
-      background: #ff8896b3;
-    }
-  }
+.btn.btn-pink:hover {
+  background: #ff8896b3;
 }

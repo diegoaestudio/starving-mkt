@@ -2,8 +2,7 @@ import Nullstack from "nullstack";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
 import NavHeader from "../../components/NavHeader";
-import { getUser } from "../../utils/user";
-import "./AdminNFT.scss";
+import "./AdminNFT.css";
 
 class AdminNFT extends Nullstack {
   data = {
@@ -72,7 +71,11 @@ class AdminNFT extends Nullstack {
           <aside>
             <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
 
-            <a href="/admin/nfts">NFTS</a>
+            <a href="/admin/nfts" class="text-3">
+              NFTS
+            </a>
+
+            <h1 class="text-3xl font-bold underline">Hello world!</h1>
           </aside>
           <div class="create-nft">
             <form class="form" action="submit">

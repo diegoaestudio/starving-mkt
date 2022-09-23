@@ -3,7 +3,7 @@ import NavHeader from "../../components/NavHeader";
 import Kidness from "../../components/Kindness";
 import Hope from "../../components/Hope";
 import BuyNft from "../../components/BuyNft";
-import "./Home.scss";
+import "./Home.css";
 import NonFungibility from "../../components/NonFungibility";
 import Footer from "../../components/Footer";
 

@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import "./BuyNft.scss";
+import "./BuyNft.css";
 
 export default class BuyNft extends Nullstack {
   render() {

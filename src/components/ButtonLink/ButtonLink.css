@@ -1,0 +1,39 @@
+.btn-link {
+  min-width: 160px;
+  background: #fdc500;
+  padding: 14px;
+  font-family: "Crete Round", serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: #000000;
+  display: flex;
+  justify-content: center;
+}
+.btn-link:hover {
+  background: #fdc600d9;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.btn-link.btn-pink {
+  background: #ff8896;
+}
+
+.btn-link.btn-pink:hover {
+  background: #ff8896b3;
+}
+
+.btn-link.btn-pink-ghost {
+  background: rgba(0, 0, 0, 0);
+  border: 2px solid #ff8896;
+  color: #ff8896;
+}
+
+.btn-link.btn-pink-ghost:hover {
+  cursor: pointer;
+  border-color: #ff8896b3;
+  color: #ff8896b3;
+  transition: 0.2s;
+}

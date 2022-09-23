@@ -2,7 +2,7 @@ import Nullstack from "nullstack";
 import { getUser, getAbbrAddrs } from "../../utils/user";
 import "../../../flow/config";
 import * as fcl from "@onflow/fcl";
-import "./NavHeader.scss";
+import "./NavHeader.css";
 
 export default class NavHeader extends Nullstack {
   user = null;
@@ -51,7 +51,7 @@ export default class NavHeader extends Nullstack {
           )}
           {this.user?.loggedIn ? (
             <>
-              <a href="/admin/create">
+              <a href="/admin">
                 <img src="/wallet-icon.svg" alt="wallet" />
                 {this.addr}
               </a>

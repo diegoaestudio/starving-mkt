@@ -1,0 +1,34 @@
+.nav_header {
+  color: white;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  padding: 40px;
+}
+
+.nav_header > div > img {
+  width: 100px;
+}
+
+.nav_header > div.menu-items {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.nav_header > div.menu-items > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.nav_header > div.menu > img {
+  width: 20px;
+  height: 20px;
+}
+
+.nav_header > div.menu-items > a:hover {
+  color: #fdc600d9;
+  transition: 0.2s;
+}

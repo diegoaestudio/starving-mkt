@@ -3,7 +3,7 @@ import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
 import NavHeader from "../../components/NavHeader";
 import { getUser } from "../../utils/user";
-import "./AdminNFTList.scss";
+import "./AdminNFTList.css";
 
 class AdminNFTList extends Nullstack {
   nfts = [];

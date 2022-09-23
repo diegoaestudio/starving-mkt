@@ -5,11 +5,16 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nullstack": "~0.16.0"
+    "nullstack": "~0.16.0",
+    "postcss-import": "^15.0.0",
+    "tailwindcss": "^3.1.8"
   },
   "scripts": {
+    "prestart": "npm run build:css",
     "start": "npx nullstack start",
     "build": "npx nullstack build",
+    "build:css": "tailwindcss build ./src/Application.css -o ./src/styles.css",
+    "css:watch": "tailwindcss -i ./src/Application.css -o ./dist/output.css --watch",
     "deploy:cdc": "flow project deploy --network=testnet --update"
   },
   "dependencies": {

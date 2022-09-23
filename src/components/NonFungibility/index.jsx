@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import "./NonFungibility.scss";
+import "./NonFungibility.css";
 
 export default class NonFungibility extends Nullstack {
   render() {

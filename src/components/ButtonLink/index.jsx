@@ -1,10 +1,10 @@
 import Nullstack from "nullstack";
-import "./ButtonLink.scss";
+import "./ButtonLink.css";
 
 class ButtonLink extends Nullstack {
   render({ linkPath, className, children }) {
     return (
-      <a class={["btn-link", className]} href={linkPath}>
+      <a class={["btn-link font-bold uppercase", className]} href={linkPath}>
         {children}
       </a>
     );

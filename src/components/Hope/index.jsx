@@ -1,5 +1,5 @@
 import Nullstack from "nullstack";
-import "./Hope.scss";
+import "./Hope.css";
 
 export default class Hope extends Nullstack {
   render() {
