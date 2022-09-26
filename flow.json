@@ -5,21 +5,24 @@
     "testnet": "access.devnet.nodes.onflow.org:9000"
   },
   "accounts": {
-    "diego": {
-      "fromFile": "diego.private.json"
+    "diego.lima@ae.studio": {
+      "fromFile": "diego.lima@ae.studio.private.json"
+    },
+    "diegoaestudio": {
+      "fromFile": "diego.lima@ae.studio.private.json"
     },
     "emulator-account": {
       "address": "f8d6e0586b0a20c7",
-      "key": "ab3caa896da69861224b876ed0c28edf080b60d87d8fa3cffc9e40b858f4a47c"
+      "key": "14238d0aca5d63b720adea75bec1169ab904af46567f795182a26c2ab8c90718"
     }
   },
   "contracts": {
-    "TAPToken": "./cadence/transacations/TAPToken.cdc",
-    "XNFT": "./cadence/transacations/XNFT.cdc"
+    "TAPToken": "./cadence/contracts/TAPToken.cdc",
+    "XNFT": "./cadence/contracts/XNFT.cdc"
   },
   "deployments": {
     "testnet": {
-      "diego": ["TAPToken", "XNFT"]
+      "diegoaestudio": ["TAPToken", "XNFT"]
     }
   }
 }

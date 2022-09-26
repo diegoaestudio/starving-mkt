@@ -15,7 +15,8 @@
     "build": "npx nullstack build",
     "build:css": "tailwindcss build ./src/Application.css -o ./src/styles.css",
     "css:watch": "tailwindcss -i ./src/Application.css -o ./dist/output.css --watch",
-    "deploy:cdc": "flow project deploy --network=testnet --update"
+    "cdc:deploy": "flow project deploy --network=testnet --update",
+    "cdc:createLink": "flow transactions send cadence/transactions/CreateLink.cdc 0xf435453dd633a663 --network testnet --signer diegoaestudio"
   },
   "dependencies": {
     "@onflow/fcl": "^1.2.1",

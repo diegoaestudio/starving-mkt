@@ -1,4 +1,5 @@
 import Nullstack from "nullstack";
+import { createNFT, createNFTContract } from "../../cadence/contracts";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
 import Input from "../../components/Input";
@@ -31,6 +32,8 @@ class AdminNFT extends Nullstack {
     { label: "No", value: false },
   ];
 
+  status = 0;
+
   handleChange({ field }) {
     return ({ event }) => {
       event.preventDefault();
@@ -58,17 +61,44 @@ class AdminNFT extends Nullstack {
     return newNFT;
   }
 
-  async handleSubmit({ instances }) {
+  async createNFT({ instances }) {
     const nft = {
       ...this.data,
       addr: instances.application.user.addr,
     };
-    const response = await this.saveNFT({ nft });
-    if (!response || response.error) {
-      alert(response.error || "Something went wrong");
-    } else {
-      alert("NFT created successfully");
-    }
+
+    const result = await this.executeContract();
+
+    console.log({ result });
+
+    // const response = await this.saveNFT({ nft });
+    // if (!response || response.error) {
+    //   alert(response.error || "Something went wrong");
+    // } else {
+    //   alert("NFT created successfully");
+    // }
+  }
+
+  async executeContract() {
+    console.log("NFT name", this.data.name);
+    const transactionId = await fcl.mutate({
+      cadence: createNFTContract(this.data.name),
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 50,
+    });
+
+    console.log({ transactionId });
+
+    fcl.tx(transactionId).subscribe((res) => {
+      console.log({ res });
+      this.status = res.status;
+      if (res.status === 4) {
+        alert(res.errorMessage);
+        this.status = 0;
+      }
+    });
   }
 
   render({ instances }) {
@@ -129,9 +159,9 @@ class AdminNFT extends Nullstack {
               </div>
               <Button
                 onclick={this.handleSubmit}
-                disable={!instances.application.user.addr}
+                disable={!instances.application.user.addr || this.status > 0}
               >
-                Create NFT
+                {this.status > 0 ? "Loading" : "Create NFT"}
               </Button>
             </form>
           </div>
