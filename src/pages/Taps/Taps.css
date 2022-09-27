@@ -1,0 +1,35 @@
+.taps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.buy-taps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.buy-taps > img {
+  width: 250px;
+}
+
+.buy-taps > .buy-taps-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #1a1a1a;
+  min-width: 400px;
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+.buy-taps > .buy-taps-card > * {
+  width: 100%;
+}

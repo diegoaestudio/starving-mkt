@@ -19,10 +19,10 @@ export default class Footer extends Nullstack {
               <a href="/wtf">WTF</a>
             </li>
             <li>
-              <a href="">Explore</a>
+              <a href="/explore">Explore</a>
             </li>
             <li>
-              <a href="">TAPS</a>
+              <a href="/taps">TAPS</a>
             </li>
           </ul>
         </div>

@@ -4,31 +4,47 @@
   display: grid;
   grid-template-columns: 1fr 2fr;
   padding: 40px;
+  align-items: center;
 }
 
-.nav_header > div > img {
+.nav_header > div > a > img {
   width: 100px;
 }
 
 .nav_header > div.menu-items {
   display: flex;
+  flex-direction: column;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 20px;
 }
 
-.nav_header > div.menu-items > a {
+.nav_header > div.menu-items > div.admin-items,
+.nav_header > div.menu-items > div.navigation-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.nav_header > div.menu-items > div.navigation-items {
+  padding-right: 80px;
+}
+
+.nav_header > div.menu-items > div.admin-items > a {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
   gap: 5px;
+  text-decoration: none;
 }
 
-.nav_header > div.menu > img {
+.nav_header > div.menu-items > div.admin-items > a > img {
   width: 20px;
   height: 20px;
 }
 
-.nav_header > div.menu-items > a:hover {
+.nav_header > div.menu-items > div.admin-items > a:hover,
+.nav_header > div.menu-items > div.navigation-items > a:hover {
   color: #fdc600d9;
   transition: 0.2s;
 }

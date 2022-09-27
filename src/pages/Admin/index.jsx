@@ -7,6 +7,7 @@ import NavHeader from "../../components/NavHeader";
 import { getUser } from "../../utils/user";
 import "./Admin.css";
 import { MINT_TOKENS, SETUP_ACCOUNT } from "../../cadence/transactions";
+import AdminSideBar from "../../components/AdminSidebar";
 
 class Admin extends Nullstack {
   data = {};
@@ -102,9 +103,7 @@ class Admin extends Nullstack {
       <>
         <NavHeader />
         <main class="admin">
-          <aside>
-            <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
-          </aside>
+          <AdminSideBar />
           <div class="faucet">
             <img src="/faucet.svg" alt="" />
             <form class="form" action="submit">

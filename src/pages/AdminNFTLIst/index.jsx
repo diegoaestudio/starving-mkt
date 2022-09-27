@@ -1,6 +1,6 @@
 import Nullstack from "nullstack";
+import AdminSideBar from "../../components/AdminSidebar";
 import Button from "../../components/Button";
-import ButtonLink from "../../components/ButtonLink";
 import NavHeader from "../../components/NavHeader";
 import NFTList from "../../components/NFTList";
 import { getUser } from "../../utils/user";
@@ -28,11 +28,7 @@ class AdminNFTList extends Nullstack {
       <>
         <NavHeader />
         <main class="admin-nft-list">
-          <aside>
-            <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
-
-            <a href="/admin/nfts">NFTS</a>
-          </aside>
+          <AdminSideBar />
           <div class="nfts">
             <h2>NFTs</h2>
             <span>Manage all your nfts</span>

@@ -8,6 +8,7 @@ import NavHeader from "../../components/NavHeader";
 import Select from "../../components/Select";
 import TextArea from "../../components/TextArea";
 import "./AdminNFT.css";
+import AdminSideBar from "../../components/AdminSidebar";
 
 class AdminNFT extends Nullstack {
   data = {
@@ -134,13 +135,7 @@ class AdminNFT extends Nullstack {
       <>
         <NavHeader />
         <main class="admin-nft">
-          <aside>
-            <ButtonLink linkPath="/admin/create">Create NFT</ButtonLink>
-
-            <a href="/admin/nfts" class="text-3 pt-10">
-              NFTS
-            </a>
-          </aside>
+          <AdminSideBar />
           <div class="create-nft">
             <form class="form" action="submit">
               <div class="side-a">

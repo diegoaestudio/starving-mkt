@@ -37,33 +37,36 @@ export default class NavHeader extends Nullstack {
     return (
       <div class="nav_header">
         <div>
-          <img src="/nft-logo.svg" alt="nft-logo" width={"auto"} />
+          <a href="/">
+            <img src="/nft-logo.svg" alt="nft-logo" width={"auto"} />
+          </a>
         </div>
         <div class="menu-items">
+          <div class="admin-items">
+            {this.user?.loggedIn ? (
+              <>
+                <a href="/admin">
+                  <img src="/wallet-icon.svg" alt="wallet" />
+                  {this.addr}
+                </a>
+                <a href="" onclick={this.handleLogout}>
+                  <img src="/logout-icon.svg" alt="wallet" />
+                  Logout
+                </a>
+              </>
+            ) : (
+              <a href="" onclick={this.handleLogin}>
+                Login
+              </a>
+            )}
+          </div>
           {!this.isAdmin && (
-            <>
+            <div class="navigation-items">
               <a href="/">Home</a>
               <a href="/wtf">WTF?</a>
               <a href="/explore">Explore</a>
-              <a href="/taps">Taps</a>
-              <a href="">{tap.totalSupply} Taps</a>
-            </>
-          )}
-          {this.user?.loggedIn ? (
-            <>
-              <a href="/admin">
-                <img src="/wallet-icon.svg" alt="wallet" />
-                {this.addr}
-              </a>
-              <a href="" onclick={this.handleLogout}>
-                <img src="/logout-icon.svg" alt="wallet" />
-                Logout
-              </a>
-            </>
-          ) : (
-            <a href="" onclick={this.handleLogin}>
-              Login
-            </a>
+              <a href="/taps">{tap.totalSupply} Taps</a>
+            </div>
           )}
         </div>
       </div>
