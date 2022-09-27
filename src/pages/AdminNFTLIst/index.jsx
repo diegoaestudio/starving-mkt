@@ -2,6 +2,7 @@ import Nullstack from "nullstack";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
 import NavHeader from "../../components/NavHeader";
+import NFTList from "../../components/NFTList";
 import { getUser } from "../../utils/user";
 import "./AdminNFTList.css";
 
@@ -43,18 +44,7 @@ class AdminNFTList extends Nullstack {
               <Button>Listed</Button>
             </div>
 
-            <div class="nft-list">
-              {this.nfts.map((nft) => (
-                <div class="nft" key={nft._id}>
-                  <img src={nft.img} alt={nft.name} />
-                  <div class="nft-info">
-                    <span class="nft-name">{nft.name}</span>
-                    <span class="nft-owner">{nft.addr}</span>
-                    <span class="nft-price">Price: {nft.price}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <NFTList nfts={this.nfts} />
           </div>
         </main>
       </>

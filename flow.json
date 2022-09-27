@@ -18,11 +18,12 @@
   },
   "contracts": {
     "TAPToken": "./cadence/contracts/TAPToken.cdc",
-    "XNFT": "./cadence/contracts/XNFT.cdc"
+    "XNFT": "./cadence/contracts/XNFT.cdc",
+    "MarketPlace": "./cadence/contracts/MarketPlace.cdc"
   },
   "deployments": {
     "testnet": {
-      "diegoaestudio": ["TAPToken", "XNFT"]
+      "diegoaestudio": ["TAPToken", "XNFT", "MarketPlace"]
     }
   }
 }

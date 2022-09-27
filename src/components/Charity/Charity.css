@@ -1,0 +1,19 @@
+.charity {
+  color: white;
+  max-width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+  gap: 15px;
+}
+
+.charity > img {
+  max-width: 400px;
+}
+
+.charity > p {
+  max-width: 400px;
+  text-align: center;
+}

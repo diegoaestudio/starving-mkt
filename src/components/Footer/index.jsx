@@ -16,7 +16,7 @@ export default class Footer extends Nullstack {
           <h2>Marketplace</h2>
           <ul>
             <li>
-              <a href="">WTF</a>
+              <a href="/wtf">WTF</a>
             </li>
             <li>
               <a href="">Explore</a>

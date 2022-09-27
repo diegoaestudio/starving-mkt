@@ -1,13 +1,10 @@
 import Nullstack from "nullstack";
-import NavHeader from "../../components/NavHeader";
-import Kidness from "../../components/Kindness";
-import Hope from "../../components/Hope";
-import BuyNft from "../../components/BuyNft";
-import "./Home.css";
-import NonFungibility from "../../components/NonFungibility";
+import Charity from "../../components/Charity";
 import Footer from "../../components/Footer";
+import NavHeader from "../../components/NavHeader";
+import NonFungibility from "../../components/NonFungibility";
 
-class Home extends Nullstack {
+class WTF extends Nullstack {
   prepare({ project, page }) {
     page.title = "Starving Market place";
     page.description = `${project.name} was made with Nullstack`;
@@ -17,9 +14,7 @@ class Home extends Nullstack {
     return (
       <section>
         <NavHeader />
-        <Kidness />
-        <Hope />
-        <BuyNft />
+        <Charity />
         <NonFungibility />
         <Footer />
       </section>
@@ -27,4 +22,4 @@ class Home extends Nullstack {
   }
 }
 
-export default Home;
+export default WTF;

@@ -94,7 +94,7 @@ class Admin extends Nullstack {
     });
 
     // 0xc5531baf74dc0626 ae.studio
-    // 0x1a5abf28cd91ef1f +1@ae.studio
+    // 0x1a5abf28cd91ef1f +1
   }
 
   render() {

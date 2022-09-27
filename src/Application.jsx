@@ -7,6 +7,8 @@ import Admin from "./pages/Admin";
 import AdminNFT from "./pages/AdminNFT";
 import AdminNFTList from "./pages/AdminNFTList";
 import { storeUser } from "./utils/user";
+import WTF from "./pages/WTF";
+import Explore from "./pages/Explore";
 
 class Application extends Nullstack {
   tap = {};
@@ -71,6 +73,8 @@ class Application extends Nullstack {
       <body>
         <Head />
         <Home route="/" />
+        <WTF route="/wtf" />
+        <Explore route="/explore" />
         <Admin route="/admin" />
         <AdminNFT route="/admin/create" />
         <AdminNFTList route="/admin/nfts" />
