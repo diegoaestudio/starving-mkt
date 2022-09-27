@@ -1,4 +1,5 @@
 import Nullstack from "nullstack";
+import * as fcl from "@onflow/fcl";
 import { createNFT, createNFTContract } from "../../cadence/contracts";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
@@ -32,7 +33,7 @@ class AdminNFT extends Nullstack {
     { label: "No", value: false },
   ];
 
-  status = 0;
+  loading = false;
 
   handleChange({ field }) {
     return ({ event }) => {
@@ -67,9 +68,11 @@ class AdminNFT extends Nullstack {
       addr: instances.application.user.addr,
     };
 
-    const result = await this.executeContract();
-
-    console.log({ result });
+    try {
+      await this.executeCreateNFTTrx();
+    } catch (err) {
+      alert(err.message || "Oops, something went wrong");
+    }
 
     // const response = await this.saveNFT({ nft });
     // if (!response || response.error) {
@@ -77,6 +80,31 @@ class AdminNFT extends Nullstack {
     // } else {
     //   alert("NFT created successfully");
     // }
+  }
+
+  async executeCreateNFTTrx() {
+    const name = this.data.name;
+    console.log({ name });
+
+    this.loading = true;
+    const transactionId = await fcl.mutate({
+      cadence: createNFTContract(name),
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 50,
+    });
+
+    fcl.tx(transactionId).subscribe((res) => {
+      console.log({ res });
+      if (res.status === 4) {
+        alert(res.errorMessage || "NFT Created successfully");
+        this.loading = false;
+      }
+    });
+
+    // 0xc5531baf74dc0626 ae.studio
+    // 0x1a5abf28cd91ef1f +1@ae.studio
   }
 
   async executeContract() {
@@ -158,10 +186,10 @@ class AdminNFT extends Nullstack {
                 />
               </div>
               <Button
-                onclick={this.handleSubmit}
-                disable={!instances.application.user.addr || this.status > 0}
+                onclick={this.createNFT}
+                disable={!instances.application.user.addr || this.loading}
               >
-                {this.status > 0 ? "Loading" : "Create NFT"}
+                {this.loading ? "Loading" : "Create NFT"}
               </Button>
             </form>
           </div>
