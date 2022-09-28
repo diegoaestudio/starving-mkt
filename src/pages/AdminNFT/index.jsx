@@ -1,5 +1,6 @@
 import Nullstack from "nullstack";
 import * as fcl from "@onflow/fcl";
+import { Web3Storage } from "web3.storage";
 import { createNFT, createNFTContract } from "../../cadence/contracts";
 import Button from "../../components/Button";
 import ButtonLink from "../../components/ButtonLink";
@@ -9,8 +10,11 @@ import Select from "../../components/Select";
 import TextArea from "../../components/TextArea";
 import "./AdminNFT.css";
 import AdminSideBar from "../../components/AdminSidebar";
+import { getUser } from "../../utils/user";
+import { MINT_NFT, SETUP_USER } from "../../cadence/transactions";
 
 class AdminNFT extends Nullstack {
+  user = null;
   data = {
     img: "",
     name: "",
@@ -29,12 +33,23 @@ class AdminNFT extends Nullstack {
     },
   };
 
+  files = [];
+
   options = [
     { label: "Yes", value: true },
     { label: "No", value: false },
   ];
 
   loading = false;
+
+  static async getWebStorageTokenApi({ secrets }) {
+    return secrets.webStorageApiToken;
+  }
+
+  async initiate() {
+    this.user = getUser();
+    this.tokenApi = await this.getWebStorageTokenApi();
+  }
 
   handleChange({ field }) {
     return ({ event }) => {
@@ -83,29 +98,99 @@ class AdminNFT extends Nullstack {
     // }
   }
 
-  async executeCreateNFTTrx() {
+  // async executeCreateNFTTrx() {
+  //   const name = this.data.name;
+  //   console.log({ name });
+
+  //   this.loading = true;
+  //   const transactionId = await fcl.mutate({
+  //     cadence: createNFTContract(name),
+  //     payer: fcl.authz,
+  //     proposer: fcl.authz,
+  //     authorizations: [fcl.authz],
+  //     // limit: 50,
+  //   });
+
+  //   fcl.tx(transactionId).subscribe((res) => {
+  //     console.log({ res });
+  //     if (res.status === 4) {
+  //       alert(res.errorMessage || "NFT Created successfully");
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
+
+  async selectImage({ event }) {
+    this.files = event.target.files;
+  }
+
+  async uploadImage({ files }) {
+    const client = new Web3Storage({ token: this.tokenApi });
+    const rootCid = await client.put(files);
+    console.log({ rootCid });
+    const info = await client.status(rootCid);
+    console.log({ info });
+
+    const url = `https://${rootCid}.ipfs.w3s.link/${files[0].name}`;
+    console.log({ url });
+    return { rootCid, url };
+  }
+
+  async mint() {
+    this.loading = true;
+
+    console.log({ data: this.data });
+
+    if (!this.data.name) alert("Include a name pls");
+
     const name = this.data.name;
+
     console.log({ name });
 
-    this.loading = true;
-    const transactionId = await fcl.mutate({
-      cadence: createNFTContract(name),
+    try {
+      const { rootCid, url } = await this.uploadImage({
+        files: this.files,
+      });
+
+      console.log({ rootCid, url });
+
+      const trxId = await fcl.mutate({
+        cadence: MINT_NFT,
+        payer: fcl.authz,
+        proposer: fcl.authz,
+        authorizations: [fcl.authz],
+        limit: 999,
+        args: (arg, t) => [arg(rootCid, t.String), arg(name, t.String)],
+      });
+
+      console.log({ trxId });
+
+      const result = await fcl.tx(trxId).onceSealed();
+      console.log({ result });
+      return result;
+    } catch (err) {
+      console.log("to no erro");
+      console.log(JSON.stringify(err));
+      alert(err);
+    }
+
+    this.loading = false;
+  }
+
+  async setupUser() {
+    const trxId = await fcl.mutate({
+      cadence: SETUP_USER,
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      // limit: 50,
+      limit: 999,
     });
 
-    fcl.tx(transactionId).subscribe((res) => {
-      console.log({ res });
-      if (res.status === 4) {
-        alert(res.errorMessage || "NFT Created successfully");
-        this.loading = false;
-      }
-    });
+    console.log({ trxId });
 
-    // 0xc5531baf74dc0626 ae.studio
-    // 0x1a5abf28cd91ef1f +1@ae.studio
+    const result = await fcl.tx(trxId).onceSealed();
+    console.log({ result });
+    return result;
   }
 
   render({ instances }) {
@@ -117,8 +202,9 @@ class AdminNFT extends Nullstack {
           <div class="create-nft">
             <form class="form" action="submit">
               <div class="side-a">
+                <Button onclick={this.setupUser}>Setup user</Button>
                 <h2>Create a new NFT</h2>
-                <Input label="Image Url" bind={this.data.img} />
+                <input type="file" oninput={this.selectImage} />
                 <Input label="Name" bind={this.data.name} />
                 <Input label="External Link" bind={this.data.externalLink} />
                 <Input
@@ -159,7 +245,7 @@ class AdminNFT extends Nullstack {
                 />
               </div>
               <Button
-                onclick={this.createNFT}
+                onclick={this.mint}
                 disable={!instances.application.user.addr || this.loading}
               >
                 {this.loading ? "Loading" : "Create NFT"}

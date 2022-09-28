@@ -21,6 +21,7 @@
   "dependencies": {
     "@onflow/fcl": "^1.2.1",
     "ipfs-http-client": "^58.0.1",
-    "mongodb": "^4.10.0"
+    "mongodb": "^4.10.0",
+    "web3.storage": "^4.4.0"
   }
 }
