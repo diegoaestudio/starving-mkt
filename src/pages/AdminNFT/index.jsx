@@ -93,7 +93,7 @@ class AdminNFT extends Nullstack {
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 50,
+      // limit: 50,
     });
 
     fcl.tx(transactionId).subscribe((res) => {
@@ -106,28 +106,6 @@ class AdminNFT extends Nullstack {
 
     // 0xc5531baf74dc0626 ae.studio
     // 0x1a5abf28cd91ef1f +1@ae.studio
-  }
-
-  async executeContract() {
-    console.log("NFT name", this.data.name);
-    const transactionId = await fcl.mutate({
-      cadence: createNFTContract(this.data.name),
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 50,
-    });
-
-    console.log({ transactionId });
-
-    fcl.tx(transactionId).subscribe((res) => {
-      console.log({ res });
-      this.status = res.status;
-      if (res.status === 4) {
-        alert(res.errorMessage);
-        this.status = 0;
-      }
-    });
   }
 
   render({ instances }) {

@@ -14,14 +14,14 @@ transaction(amount: UFix64, recipientAccount: Address) {
 
 	prepare(acct: AuthAccount) {
         // Borrow a reference to the stored, private minter resource
-        self.mintingRef = acct.borrow<&TAPToken.VaultMinter>(from: /storage/CadenceFungibleTokenTutorialMinter)
+        self.mintingRef = acct.borrow<&TAPToken.VaultMinter>(from: /storage/MinterPath2)
             ?? panic("Could not borrow a reference to the minter")
         
         // Get the public account object for account 0x03
         let recipient = getAccount(recipientAccount)
 
         // Get their public receiver capability
-        self.receiver = recipient.getCapability<&TAPToken.Vault{TAPToken.Receiver}>(/public/CadenceFungibleTokenTutorialReceiver)
+        self.receiver = recipient.getCapability<&TAPToken.Vault{TAPToken.Receiver}>(/public/ReceiverPath2)
 
 	}
 

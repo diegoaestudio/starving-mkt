@@ -1,29 +1,24 @@
-// Setup Account
+// SetupAccount1Transaction.cdc
 
-import TapToken from 0xf435453dd633a663
+import TAPToken from 0xf435453dd633a663
+import XNFT from 0xf435453dd633a663
 
-// This transaction configures an account to store and receive tokens defined by
-// the TapToken contract.
-transaction(receiverAccount: Address) {
-	prepare(acct: AuthAccount) {
-		// Create a new empty Vault object
-		let vaultA <- TapToken.createEmptyVault()
-			
-		// Store the vault in the account storage
-		acct.save<@TapToken.Vault>(<-vaultA, to: /storage/CadenceFungibleTokenTutorialVault)
-
-    log("Empty Vault stored")
-
+// This transaction sets up account 0x01 for the marketplace tutorial
+// by publishing a Vault reference and creating an empty NFT Collection.
+transaction {
+  prepare(acct: AuthAccount) {
     // Create a public Receiver capability to the Vault
-		let ReceiverRef = acct.link<&TapToken.Vault{TapToken.Receiver, TapToken.Balance}>(/public/CadenceFungibleTokenTutorialReceiver, target: /storage/CadenceFungibleTokenTutorialVault)
+    acct.link<&TAPToken.Vault{TAPToken.Receiver, TAPToken.Balance}>
+             (/public/ReceiverPath2, target: /storage/VaultPath2)
 
-    log("References created")
-	}
+    log("Created Vault references")
 
-    post {
-        // Check that the capabilities were created correctly
-        getAccount(receiverAccount).getCapability<&TapToken.Vault{TapToken.Receiver}>(/public/CadenceFungibleTokenTutorialReceiver)
-                        .check():  
-                        "Vault Receiver Reference was not created correctly"
-    }
+    // store an empty NFT Collection in account storage
+    acct.save<@XNFT.Collection>(<-XNFT.createEmptyCollection(), to: /storage/nftTutorialCollection)
+
+    // publish a capability to the Collection in storage
+    acct.link<&{XNFT.NFTReceiver}>(XNFT.CollectionPublicPath, target: XNFT.CollectionStoragePath)
+
+    log("Created a new empty collection and published a reference")
+  }
 }

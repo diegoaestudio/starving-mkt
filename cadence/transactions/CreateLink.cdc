@@ -14,7 +14,7 @@ transaction {
     // this only exposes the balance field 
     // and deposit function of the underlying vault.
     //
-    acct.link<&TAPToken.Vault{TAPToken.Receiver, TAPToken.Balance}>(/public/CadenceFungibleTokenTutorialReceiver, target: /storage/CadenceFungibleTokenTutorialVault)
+    acct.link<&TAPToken.Vault{TAPToken.Receiver, TAPToken.Balance}>(/public/ReceiverPath2, target: /storage/VaultPath2)
 
     log("Public Receiver reference created!")
   }
@@ -24,7 +24,7 @@ transaction {
     // by getting the public capability and checking 
     // that it points to a valid `Vault` object 
     // that implements the `Receiver` interface
-    getAccount(0xf435453dd633a663).getCapability<&TAPToken.Vault{TAPToken.Receiver}>(/public/CadenceFungibleTokenTutorialReceiver)
+    getAccount(0xf435453dd633a663).getCapability<&TAPToken.Vault{TAPToken.Receiver}>(/public/ReceiverPath2)
                     .check():
                     "Vault Receiver Reference was not created correctly"
     }

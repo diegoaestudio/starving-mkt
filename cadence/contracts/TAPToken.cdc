@@ -170,10 +170,10 @@ pub contract TAPToken {
         // The domain must be `storage`, `private`, or `public`
         // the identifier can be any name
         let vault <- create Vault(balance: self.totalSupply)
-        self.account.save(<-vault, to: /storage/CadenceFungibleTokenTutorialVault)
+        self.account.save(<-vault, to: /storage/VaultPath2)
 
         // Create a new MintAndBurn resource and store it in account storage
-        self.account.save(<-create VaultMinter(), to: /storage/CadenceFungibleTokenTutorialMinter)
+        self.account.save(<-create VaultMinter(), to: /storage/MinterPath2)
 
         // Create a private capability link for the Minter
         // Capabilities can be used to create temporary references to an object
@@ -182,6 +182,6 @@ pub contract TAPToken {
         //
         // The capability is stored in the /private/ domain, which is only
         // accesible by the owner of the account
-        self.account.link<&VaultMinter>(/private/Minter, target: /storage/CadenceFungibleTokenTutorialMinter)
+        self.account.link<&VaultMinter>(/public/Minter, target: /storage/MinterPath2)
     }
 }
