@@ -51,20 +51,6 @@ class AdminNFT extends Nullstack {
     this.tokenApi = await this.getWebStorageTokenApi();
   }
 
-  handleChange({ field }) {
-    return ({ event }) => {
-      event.preventDefault();
-      this.data[field] = event.target.value;
-    };
-  }
-
-  handleDonationChange({ field }) {
-    return ({ event }) => {
-      event.preventDefault();
-      this.data.donation[field] = event.target.value;
-    };
-  }
-
   static async saveNFT({ nft, database }) {
     const existingNFT = await database
       .collection("nfts")
@@ -77,48 +63,6 @@ class AdminNFT extends Nullstack {
     const newNFT = await database.collection("nfts").insertOne(nft);
     return newNFT;
   }
-
-  async createNFT({ instances }) {
-    const nft = {
-      ...this.data,
-      addr: instances.application.user.addr,
-    };
-
-    try {
-      await this.executeCreateNFTTrx();
-    } catch (err) {
-      alert(err.message || "Oops, something went wrong");
-    }
-
-    // const response = await this.saveNFT({ nft });
-    // if (!response || response.error) {
-    //   alert(response.error || "Something went wrong");
-    // } else {
-    //   alert("NFT created successfully");
-    // }
-  }
-
-  // async executeCreateNFTTrx() {
-  //   const name = this.data.name;
-  //   console.log({ name });
-
-  //   this.loading = true;
-  //   const transactionId = await fcl.mutate({
-  //     cadence: createNFTContract(name),
-  //     payer: fcl.authz,
-  //     proposer: fcl.authz,
-  //     authorizations: [fcl.authz],
-  //     // limit: 50,
-  //   });
-
-  //   fcl.tx(transactionId).subscribe((res) => {
-  //     console.log({ res });
-  //     if (res.status === 4) {
-  //       alert(res.errorMessage || "NFT Created successfully");
-  //       this.loading = false;
-  //     }
-  //   });
-  // }
 
   async selectImage({ event }) {
     this.files = event.target.files;
@@ -139,20 +83,14 @@ class AdminNFT extends Nullstack {
   async mint() {
     this.loading = true;
 
-    console.log({ data: this.data });
-
     if (!this.data.name) alert("Include a name pls");
 
     const name = this.data.name;
-
-    console.log({ name });
 
     try {
       const { rootCid, url } = await this.uploadImage({
         files: this.files,
       });
-
-      console.log({ rootCid, url });
 
       const trxId = await fcl.mutate({
         cadence: MINT_NFT,
@@ -163,18 +101,32 @@ class AdminNFT extends Nullstack {
         args: (arg, t) => [arg(rootCid, t.String), arg(name, t.String)],
       });
 
-      console.log({ trxId });
-
       const result = await fcl.tx(trxId).onceSealed();
+
+      const depositEvent = result.events.find((event) => {
+        console.log({ eventType: event.type });
+        return /deposit/gi.test(event.type);
+      });
+
+      console.log({ depositEvent });
+
+      const id = depositEvent.data.id;
+
       console.log({ result });
+      const savedInDB = await this.saveNFT({
+        nft: { ...this.data, id, img: url, addr: getUser().addr },
+      });
+
+      console.log({ savedInDB });
+      this.loading = false;
+
       return result;
     } catch (err) {
       console.log("to no erro");
       console.log(JSON.stringify(err));
+      this.loading = false;
       alert(err);
     }
-
-    this.loading = false;
   }
 
   async setupUser() {
@@ -202,7 +154,7 @@ class AdminNFT extends Nullstack {
           <div class="create-nft">
             <form class="form" action="submit">
               <div class="side-a">
-                <Button onclick={this.setupUser}>Setup user</Button>
+                {/* <Button onclick={this.setupUser}>Setup user</Button> */}
                 <h2>Create a new NFT</h2>
                 <input type="file" oninput={this.selectImage} />
                 <Input label="Name" bind={this.data.name} />

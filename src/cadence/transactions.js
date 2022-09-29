@@ -185,12 +185,78 @@ transaction {
     let MyNFTCollection = acct.getCapability<&MyNFT.Collection>(/private/MyNFTCollection)
     let FlowTokenVault = acct.getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver)
 
-    acct.save(<- NFTMarketPlace.createSaleCollection(MyNFTCollection: MyNFTCollection, FlowTokenVault: FlowTokenVault), to: /storage/MySaleCollection)
-    acct.link<&NFTMarketPlace.SaleCollection{NFTMarketPlace.SaleCollectionPublic}>(/public/MySaleCollection, target: /storage/MySaleCollection)
+    acct.save(<- NFTMarketPlace.createSaleCollection(MyNFTCollection: MyNFTCollection, FlowTokenVault: FlowTokenVault), to: /storage/MySaleCollection2)
+    acct.link<&NFTMarketPlace.SaleCollection{NFTMarketPlace.SaleCollectionPublic}>(/public/MySaleCollection2, target: /storage/MySaleCollection2)
   }
 
   execute {
     log("A user stored a Collection inside their account")  
+  }
+
+}
+`;
+
+export const LIST_FOR_SALE = `
+import NFTMarketPlace from 0xf435453dd633a663
+
+transaction(id: UInt64, price: UFix64) {
+  prepare(acct: AuthAccount) {
+    let saleCollection = acct.borrow<&NFTMarketPlace.SaleCollection>(from: /storage/MySaleCollection2)
+        ?? panic("This MySaleCollection2 doesn't exist")
+
+    saleCollection.listForSale(id: id, price: price)
+  }
+
+  execute {
+    log("A user listed an NFT for Sale")  
+  }
+
+}
+`;
+
+export const UNLIST_FOR_SALE = `
+import NFTMarketPlace from 0xf435453dd633a663
+
+transaction(id: UInt64) {
+  prepare(acct: AuthAccount) {
+    let saleCollection = acct.borrow<&NFTMarketPlace.SaleCollection>(from: /storage/MySaleCollection2)
+        ?? panic("This MySaleCollection2 doesn't exist")
+
+    saleCollection.unlistFromSale(id: id)
+  }
+
+  execute {
+    log("A user unlisted an NFT from Sale")  
+  }
+
+}
+`;
+
+export const PURCHASE_NFT = `
+import NFTMarketPlace from 0xf435453dd633a663
+import MyNFT from 0xf435453dd633a663
+import NonFungibleToken from 0x631e88ae7f1d7c20
+import FlowToken from 0x7e60df042a9c0868
+
+transaction(account: Address, id: UInt64) {
+  prepare(acct: AuthAccount) {
+    let saleCollection = getAccount(account).getCapability(/public/MySaleCollection2)
+        .borrow<&NFTMarketPlace.SaleCollection{NFTMarketPlace.SaleCollectionPublic}>()
+            ?? panic("This MySaleCollection2 doesn't exist")
+
+    let recipientCollection = getAccount(account).getCapability(/public/MySaleCollection2)
+        .borrow<&MyNFT.Collection{NonFungibleToken.CollectionPublic}>()
+            ?? panic("This user cannot purchase")
+
+    let price = saleCollection.getSalePrice(id: id)
+    let payment <- acct
+        .borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)!.withdraw(amount: price) as! @FlowToken.Vault
+
+    saleCollection.purchase(id: id, recipientCollection: recipientCollection, payment: <- payment)
+  }
+
+  execute {
+    log("A user purchased an NFT")  
   }
 
 }

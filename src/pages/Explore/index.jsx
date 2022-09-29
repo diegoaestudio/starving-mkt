@@ -1,26 +1,36 @@
 import Nullstack from "nullstack";
+import * as fcl from "@onflow/fcl";
+import { Web3Storage } from "web3.storage";
 import Footer from "../../components/Footer";
 import Input from "../../components/Input";
 import NavHeader from "../../components/NavHeader";
 import NFTList from "../../components/NFTList";
 import { getUser } from "../../utils/user";
 import "./Explore.css";
+import { GET_SALES_NFT } from "../../cadence/scripts";
+import OverlayLoader from "../../components/OverlayLoader";
 
 class Explore extends Nullstack {
   nfts = [];
   search = null;
   user = null;
+  tokenApi = null;
 
   prepare({ project, page }) {
     page.title = "Starving Market place";
     page.description = `${project.name} was made with Nullstack`;
   }
 
+  static async getWebStorageTokenApi({ secrets }) {
+    return secrets.webStorageApiToken;
+  }
+
   static async getNFTs({ database, inputSearch, addr }) {
     return database
       .collection("nfts")
       .find({
-        addr,
+        // addr,
+        forSale: true,
         ...(inputSearch && {
           $or: [
             { name: { $regex: inputSearch, $options: "i" } },
@@ -36,14 +46,17 @@ class Explore extends Nullstack {
   }
 
   async update() {
-    this.user = getUser();
-    this.nfts = await this.getNFTs({
-      inputSearch: this.search,
-      addr: this.user.addr,
-    });
+    if (this.user.addr !== getUser().addr) {
+      this.user = getUser();
+      this.nfts = await this.getNFTs({
+        inputSearch: this.search,
+        addr: this.user.addr,
+      });
+    }
   }
 
   async initiate() {
+    this.tokenApi = await this.getWebStorageTokenApi();
     this.user = getUser();
     this.nfts = await this.getNFTs({ addr: this.user.addr });
   }
@@ -56,7 +69,72 @@ class Explore extends Nullstack {
     });
   }
 
+  async getSaleNFTs() {
+    try {
+      const result = await fcl.query({
+        cadence: GET_SALES_NFT,
+        payer: fcl.authz,
+        proposer: fcl.authz,
+        authorizations: [fcl.authz],
+        limit: 999,
+        args: (arg, t) => [arg(getUser().addr, t.Address)],
+      });
+
+      console.log({ result });
+      return result;
+    } catch (error) {
+      console.error(error);
+      alert(JSON.stringify(error));
+      return [];
+    }
+  }
+
+  async hydrate() {
+    // const items = await this.getSaleNFTs();
+    // const client = new Web3Storage({ token: this.tokenApi });
+    // const nfts = await Promise.all(
+    //   items.map(async ({ nft, price }) => {
+    //     const res = await client.get(nft.ipfsHash);
+    //     const files = await res.files();
+    //     const { name } = files[0];
+    //     return {
+    //       id: nft.id,
+    //       name: nft.metadata.name,
+    //       price: parseFloat(price).toFixed(1),
+    //       img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
+    //     };
+    //   })
+    // );
+    // console.log({ nfts });
+    // this.nfts = nfts;
+  }
+
+  async purchase(nftId) {
+    const id = String(id);
+    console.log({ id });
+
+    try {
+      const trxId = await fcl.mutate({
+        cadence: UNLIST_FOR_SALE,
+        payer: fcl.authz,
+        proposer: fcl.authz,
+        authorizations: [fcl.authz],
+        limit: 999,
+        args: (arg, t) => [arg(id, t.UInt64)],
+      });
+
+      const result = await fcl.tx(trxId).onceSealed();
+      console.log({ result });
+      this.nfts = await this.getNFTs({ user });
+      return result;
+    } catch (error) {
+      console.error(error);
+      alert(JSON.stringify(error));
+    }
+  }
+
   render() {
+    // return <OverlayLoader />;
     return (
       <section>
         <NavHeader />
@@ -66,7 +144,7 @@ class Explore extends Nullstack {
 
           <Input oninput={this.searchNfts} />
 
-          <NFTList nfts={this.nfts} />
+          <NFTList nfts={this.nfts} onPurchase={this.purchase} />
         </div>
 
         <Footer />

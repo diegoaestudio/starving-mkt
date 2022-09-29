@@ -1,6 +1,7 @@
+import Button from "../Button";
 import "./NFTList.css";
 
-const NFTList = ({ nfts = [] }) => {
+const NFTList = ({ nfts = [], onSelectId, onPurchase, mode = "explore" }) => {
   return (
     <div class="nft-list">
       {nfts.map((nft) => (
@@ -11,7 +12,15 @@ const NFTList = ({ nfts = [] }) => {
               {nft.name}
             </a>
             <span class="nft-owner">{nft.addr}</span>
+            <span class="nft-owner">{nft.id}</span>
             <span class="nft-price">Price: {nft.price}</span>
+            {mode === "explore" ? (
+              <Button className="btn-pink" onclick={() => onPurchase(nft.id)}>
+                Purchase
+              </Button>
+            ) : (
+              <Button onclick={() => onSelectId(nft.id)}>Select</Button>
+            )}
           </div>
         </div>
       ))}

@@ -1,7 +1,8 @@
 import Nullstack from "nullstack";
 import "../flow/config";
 import * as fcl from "@onflow/fcl";
-import "./styles.css";
+import "./input.css";
+import "./Application.css";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import AdminNFT from "./pages/AdminNFT";
