@@ -8,13 +8,15 @@ import NFTList from "../../components/NFTList";
 import { getUser } from "../../utils/user";
 import "./Explore.css";
 import { GET_SALES_NFT } from "../../cadence/scripts";
-import OverlayLoader from "../../components/OverlayLoader";
+import { PURCHASE_NFT } from "../../cadence/transactions";
 
 class Explore extends Nullstack {
   nfts = [];
   search = null;
   user = null;
   tokenApi = null;
+  loading = false;
+  adminAddress = "";
 
   prepare({ project, page }) {
     page.title = "Starving Market place";
@@ -23,6 +25,16 @@ class Explore extends Nullstack {
 
   static async getWebStorageTokenApi({ secrets }) {
     return secrets.webStorageApiToken;
+  }
+
+  static async getAdminAddress({ secrets }) {
+    return secrets.adminAddress;
+  }
+
+  static async updatePurchasedNFT({ addr, id, database }) {
+    return database
+      .collection("nfts")
+      .updateOne({ id }, { $set: { addr, forSale: false } });
   }
 
   static async getNFTs({ database, inputSearch, addr }) {
@@ -50,15 +62,19 @@ class Explore extends Nullstack {
       this.user = getUser();
       this.nfts = await this.getNFTs({
         inputSearch: this.search,
-        addr: this.user.addr,
+        addr: this.adminAddress,
+        forSale: true,
       });
     }
   }
 
   async initiate() {
     this.tokenApi = await this.getWebStorageTokenApi();
+    this.adminAddress = await this.getAdminAddress();
+    console.log("adminAddres", this.adminAddress);
     this.user = getUser();
-    this.nfts = await this.getNFTs({ addr: this.user.addr });
+    this.nfts = await this.getNFTs({ addr: this.adminAddress, forSale: true });
+    this.loading = false;
   }
 
   async searchNfts({ event }) {
@@ -90,44 +106,57 @@ class Explore extends Nullstack {
   }
 
   async hydrate() {
-    // const items = await this.getSaleNFTs();
-    // const client = new Web3Storage({ token: this.tokenApi });
-    // const nfts = await Promise.all(
-    //   items.map(async ({ nft, price }) => {
-    //     const res = await client.get(nft.ipfsHash);
-    //     const files = await res.files();
-    //     const { name } = files[0];
-    //     return {
-    //       id: nft.id,
-    //       name: nft.metadata.name,
-    //       price: parseFloat(price).toFixed(1),
-    //       img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
-    //     };
-    //   })
-    // );
-    // console.log({ nfts });
+    const items = await this.getSaleNFTs();
+    const client = new Web3Storage({ token: this.tokenApi });
+    const nfts = await Promise.all(
+      items.map(async ({ nft, price }) => {
+        const res = await client.get(nft.ipfsHash);
+        const files = await res.files();
+        const { name } = files[0];
+        return {
+          id: nft.id,
+          name: nft.metadata.name,
+          price: parseFloat(price).toFixed(1),
+          img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
+        };
+      })
+    );
+    console.log({ nfts });
     // this.nfts = nfts;
   }
 
-  async purchase(nftId) {
-    const id = String(id);
+  async purchase({ nftId }) {
+    const id = String(nftId);
     console.log({ id });
+
+    this.loading = true;
 
     try {
       const trxId = await fcl.mutate({
-        cadence: UNLIST_FOR_SALE,
+        cadence: PURCHASE_NFT,
         payer: fcl.authz,
         proposer: fcl.authz,
         authorizations: [fcl.authz],
         limit: 999,
-        args: (arg, t) => [arg(id, t.UInt64)],
+        args: (arg, t) => [
+          arg(this.adminAddress, t.Address),
+          arg(id, t.UInt64),
+        ],
       });
 
       const result = await fcl.tx(trxId).onceSealed();
       console.log({ result });
-      this.nfts = await this.getNFTs({ user });
+      this.loading = false;
+
+      const updatedNFT = await this.updatePurchasedNFT({
+        id,
+        addr: this.user.addr,
+      });
+      console.log({ updatedNFT });
+      this.nfts = await this.getNFTs({ user: this.user });
       return result;
     } catch (error) {
+      this.loading = false;
       console.error(error);
       alert(JSON.stringify(error));
     }
@@ -140,11 +169,16 @@ class Explore extends Nullstack {
         <NavHeader />
 
         <div class="explore">
+          {this.loading && <h2>"Loading..."</h2>}
+
           <img src="/explore.svg" alt="explore starving children" />
 
           <Input oninput={this.searchNfts} />
 
-          <NFTList nfts={this.nfts} onPurchase={this.purchase} />
+          <NFTList
+            nfts={this.nfts}
+            onPurchase={(nftId) => this.purchase({ nftId })}
+          />
         </div>
 
         <Footer />

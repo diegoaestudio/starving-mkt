@@ -154,7 +154,7 @@ class AdminNFT extends Nullstack {
           <div class="create-nft">
             <form class="form" action="submit">
               <div class="side-a">
-                {/* <Button onclick={this.setupUser}>Setup user</Button> */}
+                <Button onclick={this.setupUser}>Setup user</Button>
                 <h2>Create a new NFT</h2>
                 <input type="file" oninput={this.selectImage} />
                 <Input label="Name" bind={this.data.name} />

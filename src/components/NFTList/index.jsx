@@ -15,11 +15,20 @@ const NFTList = ({ nfts = [], onSelectId, onPurchase, mode = "explore" }) => {
             <span class="nft-owner">{nft.id}</span>
             <span class="nft-price">Price: {nft.price}</span>
             {mode === "explore" ? (
-              <Button className="btn-pink" onclick={() => onPurchase(nft.id)}>
+              <Button
+                className="btn-pink"
+                onclick={() => onPurchase(JSON.parse(nft.id))}
+              >
                 Purchase
               </Button>
             ) : (
-              <Button onclick={() => onSelectId(nft.id)}>Select</Button>
+              <Button
+                className={nft.forSale && "btn-pink"}
+                disable={nft.forSale}
+                onclick={() => onSelectId(nft.id)}
+              >
+                {nft.forSale ? "For Sale" : "Select"}
+              </Button>
             )}
           </div>
         </div>

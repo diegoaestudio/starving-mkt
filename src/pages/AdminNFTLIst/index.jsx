@@ -62,42 +62,42 @@ class AdminNFTList extends Nullstack {
   async initiate() {
     this.data = {
       id: 0,
-      price: 0,
+      price: "0",
     };
-    const user = getUser();
-    this.nfts = await this.getNFTs({ user });
+    this.nfts = await this.getNFTs({ user: getUser() });
     this.tokenApi = await this.getWebStorageTokenApi();
   }
 
-  async hydrate() {
-    const user = getUser();
+  // async hydrate() {
+  //   const user = getUser();
 
-    // const list = await this.getUserNFTs({ addr: user.addr });
+  //   const list = await this.getUserNFTs({ addr: user.addr });
 
-    // console.log({ list });
+  //   console.log({ list });
 
-    // const client = new Web3Storage({ token: this.tokenApi });
-    // const nfts = await Promise.all(
-    //   list.map(async (nft) => {
-    //     const res = await client.get(nft.ipfsHash);
-    //     const files = await res.files();
-    //     const { name } = files[0];
-    //     return {
-    //       id: nft.id,
-    //       name: nft.metadata.name,
-    //       img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
-    //     };
-    //   })
-    // );
-    // console.log({ nfts });
-    // this.nfts = nfts;
+  //   const client = new Web3Storage({ token: this.tokenApi });
+  //   const nfts = await Promise.all(
+  //     list.map(async (nft) => {
+  //       const res = await client.get(nft.ipfsHash);
+  //       const files = await res.files();
+  //       const { name } = files[0];
+  //       return {
+  //         id: nft.id,
+  //         name: nft.metadata.name,
+  //         img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
+  //       };
+  //     })
+  //   );
+  //   console.log({ nfts });
+  //   // this.nfts = nfts;
 
-    // console.log({ list });
-  }
+  //   console.log({ list });
+  // }
 
   async listForSale() {
     const id = +this.data.id;
-    const price = parseFloat(this.data.price).toFixed(1).toString();
+    console.log("before: ", this.data.price);
+    const price = this.data.price;
     console.log({ id });
     console.log({ price });
 
@@ -116,13 +116,13 @@ class AdminNFTList extends Nullstack {
 
       const updateNFT = await this.updateNFT({
         id: String(id),
-        price: +price,
+        price: price,
         forSale: true,
       });
 
       console.log({ updateNFT });
 
-      this.nfts = await this.getNFTs({ user });
+      this.nfts = await this.getNFTs({ user: getUser() });
 
       return result;
     } catch (error) {
@@ -147,7 +147,7 @@ class AdminNFTList extends Nullstack {
 
       const result = await fcl.tx(trxId).onceSealed();
       console.log({ result });
-      this.nfts = await this.getNFTs({ user });
+      this.nfts = await this.getNFTs({ user: getUser() });
       return result;
     } catch (error) {
       console.error(error);
@@ -167,7 +167,11 @@ class AdminNFTList extends Nullstack {
 
             <form action="submit">
               <Input type="number" bind={this.data.id} />
-              <Input type="number" bind={this.data.price} />
+              <Input
+                // type="number"
+                bind={this.data.price}
+                // oninput={({ event }) => event.preventDefault()}
+              />
               <Button onclick={this.listForSale}>List for sale</Button>
               <Button className="btn-pink" onclick={this.unlistForSale}>
                 Unlist from sale
@@ -184,6 +188,7 @@ class AdminNFTList extends Nullstack {
             <NFTList
               nfts={this.nfts}
               onSelectId={(id) => (this.data.id = id)}
+              mode="admin"
             />
           </div>
         </main>

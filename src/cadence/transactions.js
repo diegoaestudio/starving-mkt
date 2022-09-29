@@ -244,11 +244,11 @@ transaction(account: Address, id: UInt64) {
         .borrow<&NFTMarketPlace.SaleCollection{NFTMarketPlace.SaleCollectionPublic}>()
             ?? panic("This MySaleCollection2 doesn't exist")
 
-    let recipientCollection = getAccount(account).getCapability(/public/MySaleCollection2)
+    let recipientCollection = getAccount(acct.address).getCapability(/public/MyNFTCollection)
         .borrow<&MyNFT.Collection{NonFungibleToken.CollectionPublic}>()
             ?? panic("This user cannot purchase")
 
-    let price = saleCollection.getSalePrice(id: id)
+    let price = saleCollection.getPrice(id: id)
     let payment <- acct
         .borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)!.withdraw(amount: price) as! @FlowToken.Vault
 
