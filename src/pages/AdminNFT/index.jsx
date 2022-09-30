@@ -14,7 +14,6 @@ import { getUser } from "../../utils/user";
 import { MINT_NFT, SETUP_USER } from "../../cadence/transactions";
 
 class AdminNFT extends Nullstack {
-  user = null;
   data = {
     img: "",
     name: "",
@@ -47,7 +46,6 @@ class AdminNFT extends Nullstack {
   }
 
   async initiate() {
-    this.user = getUser();
     this.tokenApi = await this.getWebStorageTokenApi();
   }
 
@@ -80,7 +78,7 @@ class AdminNFT extends Nullstack {
     return { rootCid, url };
   }
 
-  async mint() {
+  async mint({ authUser }) {
     this.loading = true;
 
     if (!this.data.name) alert("Include a name pls");
@@ -114,7 +112,7 @@ class AdminNFT extends Nullstack {
 
       console.log({ result });
       const savedInDB = await this.saveNFT({
-        nft: { ...this.data, id, img: url, addr: getUser().addr },
+        nft: { ...this.data, id, img: url, addr: authUser?.addr },
       });
 
       console.log({ savedInDB });
@@ -145,7 +143,7 @@ class AdminNFT extends Nullstack {
     return result;
   }
 
-  render({ instances }) {
+  render({ authUser }) {
     return (
       <>
         <NavHeader />
@@ -198,7 +196,7 @@ class AdminNFT extends Nullstack {
               </div>
               <Button
                 onclick={this.mint}
-                disable={!instances.application.user.addr || this.loading}
+                disable={!authUser?.addr || this.loading}
               >
                 {this.loading ? "Loading" : "Create NFT"}
               </Button>

@@ -7,13 +7,12 @@ import NavHeader from "../../components/NavHeader";
 import NFTList from "../../components/NFTList";
 import { getUser } from "../../utils/user";
 import "./Explore.css";
-import { GET_SALES_NFT } from "../../cadence/scripts";
+import { GET_BALANCE, GET_SALES_NFT } from "../../cadence/scripts";
 import { PURCHASE_NFT } from "../../cadence/transactions";
 
 class Explore extends Nullstack {
   nfts = [];
   search = null;
-  user = null;
   tokenApi = null;
   loading = false;
   adminAddress = "";
@@ -37,6 +36,12 @@ class Explore extends Nullstack {
       .updateOne({ id }, { $set: { addr, forSale: false } });
   }
 
+  static async updateUserBalance({ addr, balance, database }) {
+    return database
+      .collection("users")
+      .updateOne({ addr }, { $set: { balance } });
+  }
+
   static async getNFTs({ database, inputSearch, addr }) {
     return database
       .collection("nfts")
@@ -57,35 +62,33 @@ class Explore extends Nullstack {
       .toArray();
   }
 
-  async update() {
-    if (this.user.addr !== getUser().addr) {
-      this.user = getUser();
-      this.nfts = await this.getNFTs({
-        inputSearch: this.search,
-        addr: this.adminAddress,
-        forSale: true,
-      });
-    }
+  async update({ authUser }) {
+    // if (authUser && this.user.addr !== authUser?.addr) {
+    //   this.user = getUser();
+    //   this.nfts = await this.getNFTs({
+    //     inputSearch: this.search,
+    //     addr: this.adminAddress,
+    //     forSale: true,
+    //   });
+    // }
   }
 
   async initiate() {
     this.tokenApi = await this.getWebStorageTokenApi();
     this.adminAddress = await this.getAdminAddress();
-    console.log("adminAddres", this.adminAddress);
-    this.user = getUser();
     this.nfts = await this.getNFTs({ addr: this.adminAddress, forSale: true });
     this.loading = false;
   }
 
-  async searchNfts({ event }) {
+  async searchNfts({ event, authUser }) {
     this.search = event.target.value;
     this.nfts = await this.getNFTs({
       inputSearch: this.search,
-      addr: this.user.addr,
+      addr: authUser?.addr,
     });
   }
 
-  async getSaleNFTs() {
+  async getSaleNFTs({ authUser }) {
     try {
       const result = await fcl.query({
         cadence: GET_SALES_NFT,
@@ -93,7 +96,7 @@ class Explore extends Nullstack {
         proposer: fcl.authz,
         authorizations: [fcl.authz],
         limit: 999,
-        args: (arg, t) => [arg(getUser().addr, t.Address)],
+        args: (arg, t) => [arg(authUser?.addr, t.Address)],
       });
 
       console.log({ result });
@@ -106,26 +109,26 @@ class Explore extends Nullstack {
   }
 
   async hydrate() {
-    const items = await this.getSaleNFTs();
-    const client = new Web3Storage({ token: this.tokenApi });
-    const nfts = await Promise.all(
-      items.map(async ({ nft, price }) => {
-        const res = await client.get(nft.ipfsHash);
-        const files = await res.files();
-        const { name } = files[0];
-        return {
-          id: nft.id,
-          name: nft.metadata.name,
-          price: parseFloat(price).toFixed(1),
-          img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
-        };
-      })
-    );
-    console.log({ nfts });
+    // const items = await this.getSaleNFTs();
+    // const client = new Web3Storage({ token: this.tokenApi });
+    // const nfts = await Promise.all(
+    //   items.map(async ({ nft, price }) => {
+    //     const res = await client.get(nft.ipfsHash);
+    //     const files = await res.files();
+    //     const { name } = files[0];
+    //     return {
+    //       id: nft.id,
+    //       name: nft.metadata.name,
+    //       price: parseFloat(price).toFixed(1),
+    //       img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
+    //     };
+    //   })
+    // );
+    // console.log({ nfts });
     // this.nfts = nfts;
   }
 
-  async purchase({ nftId }) {
+  async purchase({ nftId, authUser }) {
     const id = String(nftId);
     console.log({ id });
 
@@ -150,10 +153,29 @@ class Explore extends Nullstack {
 
       const updatedNFT = await this.updatePurchasedNFT({
         id,
-        addr: this.user.addr,
+        addr: authUser?.addr,
       });
+
+      try {
+        const resultBalence = await fcl.query({
+          cadence: GET_BALANCE,
+          payer: fcl.authz,
+          proposer: fcl.authz,
+          authorizations: [fcl.authz],
+          args: (arg, t) => [arg(authUser?.addr, t.Address)],
+        });
+
+        await this.updateUserBalance({
+          addr: authUser?.addr,
+          balance: resultBalence,
+        });
+        authUser.balance = resultBalence;
+      } catch (error) {
+        console.log({ error });
+      }
+
       console.log({ updatedNFT });
-      this.nfts = await this.getNFTs({ user: this.user });
+      this.nfts = await this.getNFTs({ user: authUser });
       return result;
     } catch (error) {
       this.loading = false;

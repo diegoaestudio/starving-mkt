@@ -1,39 +1,25 @@
 import Nullstack from "nullstack";
-import { getUser, getAbbrAddrs } from "../../utils/user";
+import { getAbbrAddrs } from "../../utils/user";
 import "../../../flow/config";
 import * as fcl from "@onflow/fcl";
 import "./NavHeader.css";
 
 export default class NavHeader extends Nullstack {
-  user = null;
   isAdmin = false;
-  addr = null;
 
   initiate({ router }) {
-    this.user = getUser();
-    this.addr = getAbbrAddrs(this.user.addr);
     this.isAdmin = router.path.includes("admin");
-  }
-
-  async update() {
-    this.user = getUser();
   }
 
   handleLogout() {
     fcl.unauthenticate();
-
-    this.user = getUser();
   }
 
   handleLogin() {
-    fcl.logIn().then(() => {
-      this.user = getUser();
-    });
+    fcl.logIn().then(() => {});
   }
 
-  render({ instances }) {
-    const { tap } = instances.application;
-
+  render({ authUser }) {
     return (
       <div class="nav_header">
         <div>
@@ -43,11 +29,11 @@ export default class NavHeader extends Nullstack {
         </div>
         <div class="menu-items">
           <div class="admin-items">
-            {this.user?.loggedIn ? (
+            {authUser?.loggedIn ? (
               <>
                 <a href="/admin">
                   <img src="/wallet-icon.svg" alt="wallet" />
-                  {this.addr}
+                  {getAbbrAddrs(authUser?.addr)}
                 </a>
                 <a href="" onclick={this.handleLogout}>
                   <img src="/logout-icon.svg" alt="wallet" />
@@ -65,7 +51,7 @@ export default class NavHeader extends Nullstack {
               <a href="/">Home</a>
               <a href="/wtf">WTF?</a>
               <a href="/explore">Explore</a>
-              <a href="/taps">{tap.totalSupply} Taps</a>
+              <a href="/taps">{authUser?.balance} Taps</a>
             </div>
           )}
         </div>

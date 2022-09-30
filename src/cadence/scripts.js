@@ -44,25 +44,18 @@ pub fun main(receiverAccount: Address) {
 `;
 
 export const GET_BALANCE = `
-pub fun main(receiverAccount: Address): UFix64 {
-    // Get the accounts' public account objects
-    let acct = getAccount(receiverAccount)
+// This script reads the balance field of an account's FlowToken Balance
+import FungibleToken from 0x9a0766d93b6608b7
+import FlowToken from 0x7e60df042a9c0868
 
-    // Get references to the account's receivers
-    // by getting their public capability
-    // and borrowing a reference from the capability
-    let acctReceiverRef = acct.getCapability(/public/ReceiverPath2)
-                          .borrow<&TAPToken.Vault{TAPToken.Balance}>()
-                          ?? panic("Could not borrow acct vault reference")
+pub fun main(account: Address): UFix64 {
 
-    // Log the Vault balance of both accounts and ensure they are
-    // the correct numbers.
-    // Account 0x01 should have 40.
-    // Account 0x02 should have 20.
-    log("Account Balance")
-    log(acctReceiverRef.balance)
+    let vaultRef = getAccount(account)
+        .getCapability(/public/flowTokenBalance)
+        .borrow<&FlowToken.Vault{FungibleToken.Balance}>()
+        ?? panic("Could not borrow Balance reference to the Vault")
 
-    return acctReceiverRef.balance
+    return vaultRef.balance
 }
 `;
 

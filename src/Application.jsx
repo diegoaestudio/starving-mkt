@@ -12,6 +12,7 @@ import WTF from "./pages/WTF";
 import Explore from "./pages/Explore";
 import TAPs from "./pages/Taps";
 import NFTDetail from "./pages/NFTDetail";
+import { GET_BALANCE } from "./cadence/scripts";
 
 class Application extends Nullstack {
   tap = {};
@@ -34,25 +35,64 @@ class Application extends Nullstack {
     return database.collection("fts").findOne({ name: "TAP" });
   }
 
-  static async createOrUpdateUser({ user, database }) {
-    if (!user.loggedIn) return { loggedIn: false };
-
-    const { addr } = user;
+  static async createOrUpdateUser(context) {
+    const { user, balance, database } = context;
+    const { addr, loggedIn } = user;
     const userDoc = await database.collection("users").findOne({ addr });
-    if (userDoc) return userDoc;
+    if (userDoc) {
+      await database.collection("users").updateOne(
+        { addr },
+        {
+          $set: {
+            loggedIn,
+            balance,
+          },
+        }
+      );
+    } else {
+      await database.collection("users").insertOne({ ...user, balance });
+    }
 
-    const newUser = await database.collection("users").insertOne(user);
-    return newUser;
+    console.log("here");
+    const _user = await database.collection("users").findOne({ addr });
+    console.log({ _user });
+    context.authUser = _user;
+    // context.user = currentuser;
+    return _user;
   }
 
-  async saveUser(user) {
-    this.user = await this.createOrUpdateUser({ user });
+  async saveUser(context) {
+    const { user } = context;
+    let balance = 0;
+
+    if (user.loggedIn) {
+      try {
+        const result = await fcl.query({
+          cadence: GET_BALANCE,
+          payer: fcl.authz,
+          proposer: fcl.authz,
+          authorizations: [fcl.authz],
+          args: (arg, t) => [arg(user.addr, t.Address)],
+        });
+
+        balance = result;
+        console.log({ balance });
+        user.balance = balance;
+      } catch (error) {
+        console.log({ error });
+      }
+    }
+
+    this.user = await this.createOrUpdateUser({ user, balance });
+    context.authUser = this.user;
     await storeUser(this.user);
   }
 
   prepare(context) {
+    console.log({ instances: context.instances });
     context.page.locale = "en-US";
-    fcl.currentUser.subscribe(this.saveUser);
+    context.authUser = {};
+    fcl.currentUser.subscribe((user) => this.saveUser({ user }));
   }
 
   async initiate() {

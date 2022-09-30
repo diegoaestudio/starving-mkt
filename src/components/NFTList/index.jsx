@@ -1,7 +1,7 @@
 import Button from "../Button";
 import "./NFTList.css";
 
-const NFTList = ({ nfts = [], onSelectId, onPurchase, mode = "explore" }) => {
+const NFTList = ({ nfts = [], onSelect, onPurchase, mode = "explore" }) => {
   return (
     <div class="nft-list">
       {nfts.map((nft) => (
@@ -24,10 +24,9 @@ const NFTList = ({ nfts = [], onSelectId, onPurchase, mode = "explore" }) => {
             ) : (
               <Button
                 className={nft.forSale && "btn-pink"}
-                disable={nft.forSale}
-                onclick={() => onSelectId(nft.id)}
+                onclick={() => onSelect(nft)}
               >
-                {nft.forSale ? "For Sale" : "Select"}
+                Select
               </Button>
             )}
           </div>

@@ -13,7 +13,8 @@ import { Web3Storage } from "web3.storage";
 
 class AdminNFTList extends Nullstack {
   nfts = [];
-  data = {};
+  selectedNFT = {};
+  user = {};
 
   async prepare({ project, page }) {
     page.title = "Starving Market place";
@@ -59,45 +60,42 @@ class AdminNFTList extends Nullstack {
     return secrets.webStorageApiToken;
   }
 
+  async update({ authUser }) {
+    if (authUser && authUser.addr !== this.user.addr) {
+      this.user = authUser;
+      this.nfts = await this.getNFTs({ user: authUser });
+    }
+  }
+
   async initiate() {
-    this.data = {
-      id: 0,
-      price: "0",
-    };
-    this.nfts = await this.getNFTs({ user: getUser() });
+    this.selectedNFT = {};
     this.tokenApi = await this.getWebStorageTokenApi();
   }
 
-  // async hydrate() {
-  //   const user = getUser();
+  async hydrate({ authUser }) {
+    //   const list = await this.getUserNFTs({ addr: user.addr });
+    //   console.log({ list });
+    //   const client = new Web3Storage({ token: this.tokenApi });
+    //   const nfts = await Promise.all(
+    //     list.map(async (nft) => {
+    //       const res = await client.get(nft.ipfsHash);
+    //       const files = await res.files();
+    //       const { name } = files[0];
+    //       return {
+    //         id: nft.id,
+    //         name: nft.metadata.name,
+    //         img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
+    //       };
+    //     })
+    //   );
+    //   console.log({ nfts });
+    //   // this.nfts = nfts;
+    //   console.log({ list });
+  }
 
-  //   const list = await this.getUserNFTs({ addr: user.addr });
-
-  //   console.log({ list });
-
-  //   const client = new Web3Storage({ token: this.tokenApi });
-  //   const nfts = await Promise.all(
-  //     list.map(async (nft) => {
-  //       const res = await client.get(nft.ipfsHash);
-  //       const files = await res.files();
-  //       const { name } = files[0];
-  //       return {
-  //         id: nft.id,
-  //         name: nft.metadata.name,
-  //         img: `https://${nft.ipfsHash}.ipfs.w3s.link/${name}`,
-  //       };
-  //     })
-  //   );
-  //   console.log({ nfts });
-  //   // this.nfts = nfts;
-
-  //   console.log({ list });
-  // }
-
-  async listForSale() {
-    const id = +this.data.id;
-    console.log("before: ", this.data.price);
-    const price = this.data.price;
+  async listForSale({ authUser }) {
+    const id = +this.selectedNFT.id;
+    const price = this.selectedNFT.price;
     console.log({ id });
     console.log({ price });
 
@@ -122,7 +120,8 @@ class AdminNFTList extends Nullstack {
 
       console.log({ updateNFT });
 
-      this.nfts = await this.getNFTs({ user: getUser() });
+      this.selectedNFT = {};
+      this.nfts = await this.getNFTs({ user: authUser });
 
       return result;
     } catch (error) {
@@ -131,8 +130,8 @@ class AdminNFTList extends Nullstack {
     }
   }
 
-  async unlistForSale() {
-    const id = +this.data.id;
+  async unlistForSale({ authUser }) {
+    const id = +this.selectedNFT.id;
     console.log({ id });
 
     try {
@@ -147,7 +146,14 @@ class AdminNFTList extends Nullstack {
 
       const result = await fcl.tx(trxId).onceSealed();
       console.log({ result });
-      this.nfts = await this.getNFTs({ user: getUser() });
+
+      await this.updateNFT({
+        id: String(id),
+        price: "0",
+        forSale: false,
+      });
+      this.selectedNFT = {};
+      this.nfts = await this.getNFTs({ user: authUser });
       return result;
     } catch (error) {
       console.error(error);
@@ -166,16 +172,18 @@ class AdminNFTList extends Nullstack {
             <span>Manage all your nfts</span>
 
             <form action="submit">
-              <Input type="number" bind={this.data.id} />
+              <Input type="number" bind={this.selectedNFT.id} />
               <Input
                 // type="number"
-                bind={this.data.price}
-                // oninput={({ event }) => event.preventDefault()}
+                bind={this.selectedNFT.price}
               />
-              <Button onclick={this.listForSale}>List for sale</Button>
-              <Button className="btn-pink" onclick={this.unlistForSale}>
-                Unlist from sale
-              </Button>
+              {!this.selectedNFT.forSale ? (
+                <Button onclick={this.listForSale}>List for sale</Button>
+              ) : (
+                <Button className="btn-pink" onclick={this.unlistForSale}>
+                  Unlist from sale
+                </Button>
+              )}
             </form>
 
             {/* <div class="filters">
@@ -187,7 +195,7 @@ class AdminNFTList extends Nullstack {
 
             <NFTList
               nfts={this.nfts}
-              onSelectId={(id) => (this.data.id = id)}
+              onSelect={(nft) => (this.selectedNFT = nft)}
               mode="admin"
             />
           </div>

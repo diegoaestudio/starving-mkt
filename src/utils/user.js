@@ -4,5 +4,5 @@ export const storeUser = (user) =>
 export const getUser = () => JSON.parse(localStorage.getItem("user"));
 
 export const getAbbrAddrs = (address) => {
-  return address.slice(0, 6) + "..." + address.slice(-4);
+  return address ? address.slice(0, 6) + "..." + address.slice(-4) : "";
 };
